@@ -14,11 +14,11 @@ app.secret_key = 'Sp2s@2024!'  # Change this to a secure random value
 
 # MySQL connection
 db = pymysql.connect(
-    host="localhost",
-    port=3306,
-    user="root",  # Replace with your MySQL username
-    password="admin",  # Replace with your MySQL password
-    database="lucky_draw"
+    host=os.getenv("dpg-cu4tb5t6l47c73deadbg-a"),
+    port=int(os.getenv("5432")),
+    user=os.getenv("lucky_draw_user"),
+    password=os.getenv("fS7zcbTQQGWwKalfzVD1V7XoWveNKZd1"),
+    database=os.getenv("lucky_draw")
 )
 
 # Rate limiter
