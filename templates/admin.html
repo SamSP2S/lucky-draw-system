@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff4d4d, #ffcc00);
+            color: #333;
+        }
+        .container {
+            max-width: 90%;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 30px;
+            color: #e63946;
+        }
+        .actions, .search-sort {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background-color: #e63946;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 50px;
+            min-width: 120px;
+            box-sizing: border-box;
+        }
+        .button:hover {
+            background-color: #d62828;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #b02a37;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: #fef6e4;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        th {
+            background-color: #e63946;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        th a {
+            color: white;
+            text-decoration: none;
+        }
+        th a:hover {
+            text-decoration: underline;
+        }
+        td img {
+            width: 100px;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            width: 99%;
+            padding: 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #fef6e4;
+        }
+        tbody tr:hover {
+            background-color: #ffe3d8;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Top Actions -->
+        <div class="actions">
+            <a href="/admin/logout" class="button">Logout</a>
+            <form action="/admin/reset_codes" method="POST" style="display:inline;">
+                <button type="submit" class="button">Reset All Codes</button>
+            </form>
+            <a href="/admin/export" class="button">Export Customer Data</a>
+        </div>
+
+        <!-- Search and Sort -->
+        <div class="search-sort">
+            <form method="GET" action="/admin">
+                <input type="text" name="search" placeholder="Search..." value="{{ search_query }}" style="padding: 12px; width: 300px; border: 1px solid #ccc; border-radius: 8px;">
+                <button type="submit" class="button">Search</button>
+            </form>
+        </div>
+
+        <!-- Customer Entries -->
+        <h2>Customer Entries</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th><a href="?sort=name&order={{ 'ASC' if sort_order == 'DESC' else 'DESC' }}">Name</a></th>
+                    <th><a href="?sort=email&order={{ 'ASC' if sort_order == 'DESC' else 'DESC' }}">Email</a></th>
+                    <th><a href="?sort=phone&order={{ 'ASC' if sort_order == 'DESC' else 'DESC' }}">Phone</a></th>
+                    <th><a href="?sort=code&order={{ 'ASC' if sort_order == 'DESC' else 'DESC' }}">Code</a></th>
+                    <th>Prize</th>
+                    <th><a href="?sort=created_at&order={{ 'ASC' if sort_order == 'DESC' else 'DESC' }}">Entry Date</a></th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if customers %}
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer[1] }}</td>
+                        <td>{{ customer[2] }}</td>
+                        <td>{{ customer[3] }}</td>
+                        <td>{{ customer[4] }}</td>
+                        <td>{{ customer[5] }}</td>
+                        <td>{{ customer[6] }}</td>
+                        <td>
+                            <a href="/admin/customer/edit/{{ customer[0] }}" class="button">Edit</a>
+                            <form action="/admin/customer/delete/{{ customer[0] }}" method="POST" style="display:inline;">
+                                <button type="submit" class="button btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="7">No customer entries found.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Prize Inventory -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <h2>Prize Inventory</h2>
+            <a href="/admin/add_prize" class="button">Add New Prize</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Prize Name</th>
+                    <th>Quantity</th>
+                    <th>Normalized Rate (%)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if prizes %}
+                    {% set total_rate = prizes | sum(attribute=3) %}
+                    {% for prize in prizes %}
+                    <tr>
+                        <td>{{ prize[1] }}</td>
+                        <td>{{ prize[2] }}</td>
+                        <td>{{ (prize[3] / total_rate * 100) | round(2) if total_rate > 0 else 0 }}%</td>
+                        <td>
+                            <a href="/admin/prize/edit/{{ prize[0] }}" class="button">Edit</a>
+                            <form action="/admin/prize/delete/{{ prize[0] }}" method="POST" style="display:inline;">
+                                <button type="submit" class="button btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="4">No prizes available.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Reset Specific Code -->
+        <h2>Reset Specific Code</h2>
+        <form action="/admin/reset_specific_code" method="POST">
+            <div class="form-group">
+                <label for="code">Enter Specific Code:</label>
+                <input type="text" id="code" name="code" placeholder="Enter unique code" required>
+            </div>
+            <button type="submit" class="button">Reset Code</button>
+        </form>
+    </div>
+</body>
+</html>

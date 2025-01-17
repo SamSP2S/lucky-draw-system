@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Prize Rate</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff4d4d, #ffcc00);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #e63946;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus {
+            border-color: #e63946;
+            box-shadow: 0 0 4px rgba(230, 57, 70, 0.5);
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            color: white;
+            background-color: #e63946;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #d62828;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #e63946;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Prize Rate</h1>
+        <form method="POST" action="/admin/prize/edit_rate/{{ prize_id }}">
+            <div class="form-group">
+                <label for="prize_name">Prize Name:</label>
+                <input type="text" id="prize_name" name="prize_name" value="{{ prize[0] }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="rate">Rate (%):</label>
+                <input type="number" id="rate" name="rate" value="{{ prize[1] }}" min="0" max="100" required>
+            </div>
+            <button type="submit" class="button">Save Changes</button>
+        </form>
+        <a href="/admin" class="back-link">Back to Dashboard</a>
+    </div>
+</body>
+</html>

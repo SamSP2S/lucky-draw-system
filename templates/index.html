@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SP2S Lucky Draw</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff4d4d, #ffcc00);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+            color: #e63946;
+        }
+        h2 {
+            text-align: center;
+            color: #d35400;
+            font-size: 23px;
+            margin-bottom: 20px;
+        }
+        p {
+            text-align: center;
+            margin: 10px 0 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus {
+            border-color: #e63946;
+            box-shadow: 0 0 4px rgba(230, 57, 70, 0.5);
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            color: white;
+            background-color: #e67e22;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #d35400;
+        }
+        .rotating-prize {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d35400;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        .result p {
+            font-size: 14px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to</h1>
+        <h2>🎉 SP2S Chinese New Year - Lucky Draw 🎉</h2>
+        <p>Enter your details and unique code below to participate and win amazing prizes!</p>
+        <form id="luckyDrawForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+            </div>
+            <div class="form-group">
+                <label for="code">Unique Code:</label>
+                <input type="text" id="code" name="code" placeholder="Enter your 7-character code" minlength="7" maxlength="7" required>
+            </div>
+            <button type="button" class="button" onclick="submitForm()">Try My Luck</button>
+        </form>
+        <div class="rotating-prize" id="rotatingPrize">Spinning...</div>
+        <div id="result" class="result"></div>
+        <footer>
+            <p>&copy; 2025 SP2S Chinese New Year - Lucky Draw Inc. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        async function submitForm() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const code = document.getElementById("code").value;
+
+            const result = document.getElementById("result");
+            const rotatingPrize = document.getElementById("rotatingPrize");
+
+            result.innerHTML = "";
+            rotatingPrize.style.display = "block";
+
+            const samplePrizes = await fetchPrizes(); // Fetch prizes dynamically
+            let index = 0;
+            let rotationDuration = 5000; // Total rotation duration in milliseconds
+            const rotationSpeed = 50; // Rotation speed in milliseconds
+
+            // Start rotating prize names
+            const interval = setInterval(() => {
+                rotatingPrize.innerHTML = `🎁 ${samplePrizes[index]}`;
+                index = (index + 1) % samplePrizes.length;
+            }, rotationSpeed);
+
+            setTimeout(async () => {
+                clearInterval(interval); // Stop rotating after the duration
+                rotatingPrize.style.display = "none"; // Hide rotating text
+
+                try {
+                    const response = await fetch("/validate_code", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, email, phone, code }),
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === "success") {
+                        result.innerHTML = `
+                            <p class="success">🎉 Congratulations! You won: <strong>${data.prize}</strong></p>
+                            <p>📸 Take a screenshot of this result to claim your prize.</p>
+                        `;
+                    } else if (data.status === "unlucky") {
+                        result.innerHTML = `<p class="error">${data.message}</p>`;
+                    } else {
+                        result.innerHTML = `<p class="error">${data.message}</p>`;
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    result.innerHTML = `<p class="error">Error connecting to the server. Please try again later.</p>`;
+                }
+            }, rotationDuration);
+        }
+
+        async function fetchPrizes() {
+            try {
+                const response = await fetch("/get_prizes");
+                const data = await response.json();
+                if (data.status === "success" && data.prizes.length > 0) {
+                    return data.prizes;
+                } else {
+                    throw new Error("No prizes available or failed to fetch prizes.");
+                }
+            } catch (error) {
+                console.error("Error fetching prizes:", error);
+                return ["No prizes available"];
+            }
+        }
+    </script>
+</body>
+</html>

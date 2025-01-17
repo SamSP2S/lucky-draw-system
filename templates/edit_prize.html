@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Prize</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #a8dadc, #457b9d);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        form label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+
+        form input, form select {
+            width: 99%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        form input[type="file"] {
+            padding: 5px;
+        }
+
+        form img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 10px auto 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button-cancel {
+            background-color: #dc3545;
+        }
+
+        .button-cancel:hover {
+            background-color: #b02a37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Prize</h1>
+        <form action="{{ url_for('edit_prize', prize_id=prize_id) }}" method="POST" enctype="multipart/form-data">
+            <label for="prize_name">Prize Name:</label>
+            <input type="text" id="prize_name" name="prize_name" value="{{ prize[0] }}" required>
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" value="{{ prize[1] }}" min="0" required>
+
+            <label for="normalized_rate">Normalized Rate:</label>
+			<input type="number" step="0.01" id="normalized_rate" name="normalized_rate" value="{{ prize[2] }}" required>
+            <div class="form-actions">
+                <button type="submit" class="button">Save Changes</button>
+                <a href="{{ url_for('admin_dashboard') }}" class="button button-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
